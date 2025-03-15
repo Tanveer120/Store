@@ -6,7 +6,7 @@ import productModel from '../models/productModel.js'
 const addProduct = async (req, res) => {
 
     try {
-        const { name, description, price, category, subCategory, sizes, bestSeller } = req.body
+        const { name, description,rate , price, category, subCategory, sizes, bestSeller } = req.body
         
         const image1 = req.files.image1 && req.files.image1[0]
         const image2 = req.files.image2 && req.files.image2[0]
@@ -17,8 +17,6 @@ const addProduct = async (req, res) => {
 
         await connectCloudinary()
 
-        // console.log(process.env.CLOUDINARY_NAME, process.env.CLOUDINARY_API_KEY, process.env.CLOUDINARY_SECRET_KEY)
-
         let imagesUrl = await Promise.all(
             images.map(async (item) => {
                 let result = await cloudinary.uploader.upload(item.path, { resource_type: "image" });
@@ -26,14 +24,11 @@ const addProduct = async (req, res) => {
             })
         )
 
-        // console.log(name, description, price, category, subCategory, sizes, bestSeller)
-        
-        // console.log(imagesUrl)
-
         const productData = {
             name,
             description,
             category,
+            rate:Number(rate),
             price: Number(price),
             subCategory,
             bestSeller: bestSeller === "true" ? true : false,
