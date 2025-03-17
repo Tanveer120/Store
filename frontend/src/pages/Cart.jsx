@@ -10,7 +10,9 @@ const Cart = () => {
   const [cartData, setCartData] = useState([]);
 
   useEffect(() => {
-    const tempData = [];
+
+    if (products.length > 0) {
+      const tempData = [];
     for (const items in cartItems) {
       for (const item in cartItems[items]) {
         if (cartItems[items][item] > 0) {
@@ -23,7 +25,8 @@ const Cart = () => {
       }
     }
     setCartData(tempData);
-  }, [cartItems]);
+    }
+  }, [cartItems, products]);
 
   return (
     <div className="border-t pt-14">
@@ -34,7 +37,7 @@ const Cart = () => {
       <div>
         {cartData.map((item, index) => {
           const productData = products.find(
-            (product) => product.id === item.id
+            (product) => product._id === item.id
           );
 
           return (
@@ -53,9 +56,9 @@ const Cart = () => {
                     {productData.name}
                   </p>
                   <div className="flex items-center gap-5 mt-2">
-                    <p>
-                      {currency}
-                      {productData.price}
+                    <p className="flex gap-2">
+                      <strike>{currency}{productData.rate}</strike>
+                      {currency}{productData.price}
                     </p>
                     <p className="px-2 sm:px-3 sm:py-1 border bg-slate-50">
                       {item.size}
