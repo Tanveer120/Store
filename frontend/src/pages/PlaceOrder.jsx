@@ -4,6 +4,8 @@ import CartTotal from "../components/CartTotal";
 import { assets } from "../assets/frontend_assets/assets";
 import { ShopContext } from "../context/ShopContext";
 import { toast } from "react-toastify";
+import axios from "axios";
+// import userModel from "../models/userModel.js";
 
 const PlaceOrder = () => {
   const [method, setMethod] = useState("cod");
