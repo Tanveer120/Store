@@ -20,7 +20,7 @@ const ShopContextProvider = (props) => {
     const navigate = useNavigate();
 
     const addToCart = async (itemId, size) => {
-        console.log(itemId, size);
+        // console.log(itemId, size);
         if (!size) {
             toast.error("Select product Size");
             return;
@@ -41,7 +41,7 @@ const ShopContextProvider = (props) => {
             cartData[itemId][size] = 1;
         }
         setCartItems(cartData);
-        console.log(cartData);
+        // console.log(cartData);
 
         if (token) {
             try {

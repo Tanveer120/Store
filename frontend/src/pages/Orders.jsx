@@ -14,14 +14,14 @@ const Orders = () => {
       if (!token) {
         return null;
       }
-      console.log(token);
+
       const response = await axios.post(backendUrl + '/api/order/userorders',{}, { headers: { token } });
       if(response.data.success) {
         let allOrderItems = []
         response.data.orders.map((order) => {
           order.items.map((item) => {
             item['status'] = order.status;
-            item['payment'] = order.payment;
+            // item['payment'] = order.payment;
             item['paymentMethod'] = order.paymentMethod;
             item['date'] = order.date;
             allOrderItems.push(item);
@@ -41,7 +41,7 @@ const Orders = () => {
 
   useEffect(() => {
     loadOrderData();
-  }, [token])
+  }, [])
 
   return (
     <div className='border-t pt-16'>
@@ -73,7 +73,7 @@ const Orders = () => {
                   <p className='min-w-2 h-2 rounded-full bg-green-500'></p>
                   <p className='text-sm md:text-base'>{ item.status }</p>
                 </div>
-                <button onClick={loadOrderData()} className='border px-4 py-2 text-sm font-medium rounded-sm'>Track Order</button>
+                <button onClick={()=>loadOrderData()} className='border px-4 py-2 text-sm font-medium rounded-sm'>Track Order</button>
               </div>
 
             </div>
