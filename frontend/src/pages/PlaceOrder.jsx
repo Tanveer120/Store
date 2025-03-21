@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import Title from "../components/Title";
 import CartTotal from "../components/CartTotal";
 import { assets } from "../assets/frontend_assets/assets";
@@ -79,6 +79,38 @@ const PlaceOrder = () => {
       toast.error(error.message);
     }
   }
+
+  // On mount, fetch profile details from DB
+  useEffect(() => {
+    const fetchProfile = async () => {
+        try {
+        //   console.log(req.body.userId);
+        const response = await axios.get(`${backendUrl}/api/user/profile/getUpdateProfile`, {
+          headers: { token },
+        });
+          if (response.data.success) {
+          if(response.data.user.useForOrders===true){
+            setFormData({
+              firstName: response.data.user.firstname || "",
+              lastName: response.data.user.lastname || "",
+              email: response.data.user.email || "",
+              phone: response.data.user.phoneNumber || "",
+              street: response.data.user.street || "",
+              city: response.data.user.city || "",
+              state: response.data.user.state || "",
+              zipcode: response.data.user.zipcode || "",
+              country: response.data.user.country || "",
+            });
+          }
+        }
+      } catch (error) {
+        console.error(error);
+        toast.error("Error fetching profile");
+      }
+    };
+
+    fetchProfile();
+  }, [backendUrl, token]);
   
 
   return (

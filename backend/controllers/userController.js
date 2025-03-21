@@ -267,5 +267,72 @@ const adminLogin = async (req, res) => {
     }
 }
 
+// Route for updating user profile
+// Route for updating user profile
+const updateUserProfile = async (req, res) => {
+    try {
+      // Use the userId set by auth middleware in req.body.userId
+      const user = await userModel.findById(req.body.userId);
+      if (!user) {
+        return res.json({
+          success: false,
+          message: "User not found",
+        });
+      }
+  
+      // Update only provided fields (update useForOrders correctly)
+      user.firstname = req.body.firstname || user.firstname;
+      user.lastname = req.body.lastname || user.lastname;
+      user.email = req.body.email || user.email;
+      user.phoneNumber = req.body.phoneNumber || user.phoneNumber;
+      user.street = req.body.street || user.street;
+      user.city = req.body.city || user.city;
+      user.state = req.body.state || user.state;
+      user.zipcode = req.body.zipcode || user.zipcode;
+      user.country = req.body.country || user.country;
+      // Use nullish coalescing to allow false values
+      user.useForOrders = req.body.useForOrders ?? user.useForOrders;
+  
+      const updatedUser = await user.save();
+      res.json({
+        success: true,
+        message: "User profile updated successfully",
+        updatedUser,
+      });
+    } catch (error) {
+      console.log(error);
+      res.json({
+        success: false,
+        message: error.message,
+      });
+    }
+  };
+  
+  
+// Route for getting user profile
+// Route for getting user profile
+const getUserProfile = async (req, res) => {
+    try {
+      const user = await userModel.findById(req.body.userId);
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: "User not found",
+        });
+      }
+      res.status(200).json({
+        success: true,
+        user,
+      });
+    } catch (error) {
+      console.error("Error in getUserProfile:", error);
+      res.status(500).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  };
+  
+
 // export { loginUser, registerUser, adminLogin, verifyPhoneNumber }
-export { loginUser, initiateRegistration, completeRegistration, adminLogin }
+export { loginUser, initiateRegistration, completeRegistration, adminLogin, updateUserProfile, getUserProfile }
