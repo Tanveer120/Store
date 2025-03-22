@@ -12,6 +12,7 @@ import Dashboard from "./pages/Dashboard";
 
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import AdminChat from "./pages/AdminChat";
 
 export const backendUrl = import.meta.env.VITE_BACKEND_URL;
 export const currency = '₹'
@@ -42,6 +43,7 @@ const App = () => {
                 <Route path="/update" element={<Update token={token} />} />
                   <Route path="/user" element={<UserList token={token} />} />
                   <Route path="/dashboard" element={<Dashboard token={token} />} />
+                  <Route path="/chatUser" element={<AdminChat token={token} />} />
               </Routes>
             </div>
           </div>

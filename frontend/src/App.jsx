@@ -13,6 +13,7 @@ import Cart from './pages/Cart'
 import Footer from './components/Footer'
 import SearchBar from './components/SearchBar'
 import Profile from './pages/Profile'
+import ChatPage from './pages/ChatPage'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -34,6 +35,7 @@ const App = () => {
         <Route path='/place-order' element={<PlaceOrder />}></Route>
         <Route path='/orders' element={<Orders />}></Route>
         <Route path='/profile' element={<Profile />}></Route>
+        <Route path='/chat' element={<ChatPage />}></Route>
       </Routes>
       <Footer/>
     </div>
