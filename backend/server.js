@@ -1,3 +1,4 @@
+// backend/server.js
 import express from 'express';
 import cors from 'cors';
 import 'dotenv/config';
@@ -9,82 +10,89 @@ import cartRouter from './routes/cartRoute.js';
 import orderRouter from './routes/orderRoute.js';
 import reviewRouter from './routes/reviewRoute.js';
 import chatRouter from './routes/chatRoute.js';
+import employeeRouter from './routes/employeeRoute.js';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import Chat from './models/chatModel.js';
+import Employee from './models/employeeModel.js';
 
-// App config
 const app = express();
 const port = process.env.PORT || 4000;
 connectDB();
 connectCloudinary; // Ensure this is invoked if needed
 
-// Middlewares
 app.use(express.json());
 app.use(cors());
 
-// API endpoints
+// Mount routes
 app.use('/api/user', userRouter);
 app.use('/api/product', productRouter);
 app.use('/api/cart', cartRouter);
 app.use('/api/order', orderRouter);
 app.use('/api/review', reviewRouter);
 app.use('/api/chat', chatRouter);
+app.use('/api/employee', employeeRouter);
 
 app.get('/', (req, res) => {
   res.send("API working");
 });
 
-// Create HTTP server and attach Socket.IO
+// Socket.IO setup
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: { origin: '*' }
 });
 
-// Chat feature variables and round-robin employee assignment
-const employees = ['employee1', 'employee2', 'employee3'];
-let nextEmployeeIndex = 0;
-
+// Updated startChat event: dynamically assign an employee based on current load
 io.on('connection', (socket) => {
   console.log('Socket connected: ' + socket.id);
 
-  // Optional: Employee login event
   socket.on('employeeLogin', (employeeId) => {
     console.log(`Employee ${employeeId} logged in.`);
-    // Optionally store employee socket info if required.
   });
 
-  // Listen for joinChat event so that clients can join a specific chat room
   socket.on('joinChat', (chatRoomId) => {
     socket.join(chatRoomId);
     console.log(`Socket ${socket.id} joined room ${chatRoomId}`);
   });
 
-  // When a user initiates a chat, validate user and assign an employee
   socket.on('startChat', async (user, callback) => {
     try {
-      if (!user) {
-        return callback({ error: 'User information is required.' });
-      }
-      // Round-robin assignment
-      const assignedEmployee = employees[nextEmployeeIndex];
-      nextEmployeeIndex = (nextEmployeeIndex + 1) % employees.length;
+      if (!user) return callback({ error: 'User information is required.' });
       
-      // Create a new Chat document in MongoDB (Chat schema requires a 'user' field)
+      // Retrieve all employees from the database
+      const employees = await Employee.find({});
+      if (!employees || employees.length === 0) {
+        return callback({ error: 'No employees available.' });
+      }
+      
+      // Count the number of chats assigned to each employee
+      const chatCounts = await Promise.all(
+        employees.map(async (emp) => {
+          const count = await Chat.countDocuments({ employee: emp.email });
+          return { email: emp.email, count };
+        })
+      );
+      console.log("Chat counts:", chatCounts);
+      
+      // Determine the minimum chat count among employees
+      const minCount = Math.min(...chatCounts.map(emp => emp.count));
+      // Filter employees with the minimum count
+      const eligibleEmployees = chatCounts.filter(emp => emp.count === minCount);
+      console.log("Eligible employees:", eligibleEmployees);
+      
+      // Randomly select one among the eligible employees
+      const assignedEmployee = eligibleEmployees[Math.floor(Math.random() * eligibleEmployees.length)].email;
+      
+      // Create a new chat record with the selected employee
       const chat = new Chat({
         user,
         employee: assignedEmployee,
         messages: []
       });
       const savedChat = await chat.save();
-      
-      // Use the MongoDB-generated ObjectId as the chatRoomId
       const chatRoomId = savedChat._id.toString();
-      
-      // Make the socket join the chat room
       socket.join(chatRoomId);
-      
-      // Return chat details to the client
       callback({ chatRoomId, employee: assignedEmployee });
     } catch (error) {
       console.error("Error starting chat:", error);
@@ -92,7 +100,6 @@ io.on('connection', (socket) => {
     }
   });
 
-  // Handle incoming chat messages: Save to DB and broadcast to the room
   socket.on('chatMessage', async ({ chatRoomId, sender, text }) => {
     try {
       const chat = await Chat.findById(chatRoomId);

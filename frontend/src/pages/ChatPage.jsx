@@ -96,7 +96,6 @@ const ChatWidget = () => {
 
       // Listen for incoming messages from server
       newSocket.on('chatMessage', (message) => {
-        console.log('Received message:', message);
         setMessages((prev) => [...prev, message]);
       });
 
