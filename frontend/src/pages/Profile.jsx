@@ -1,3 +1,4 @@
+// src/pages/Profile.jsx
 import React, { useState, useEffect, useContext } from "react";
 import Title from "../components/Title";
 import { toast } from "react-toastify";
@@ -23,27 +24,29 @@ const Profile = () => {
   // Checkbox state to indicate that the profile should be used to auto-fill orders
   const [useForOrders, setUseForOrders] = useState(false);
 
-  // On mount, fetch profile details from DB
+  // On mount, fetch profile details from DB and update both formData and useForOrders state
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await axios.get(`${backendUrl}/api/user/profile/getUpdateProfile`, {
-          headers: { token },
-        });
+        const response = await axios.get(
+          `${backendUrl}/api/user/profile/getUpdateProfile`,
+          { headers: { token } }
+        );
         
         if (response.data.success) {
+          const user = response.data.user;
           setFormData({
-            firstname: response.data.user.firstname || "",
-            lastname: response.data.user.lastname || "",
-            email: response.data.user.email || "",
-            phoneNumber: response.data.user.phoneNumber || "",
-            street: response.data.user.street || "",
-            city: response.data.user.city || "",
-            state: response.data.user.state || "",
-            zipcode: response.data.user.zipcode || "",
-            country: response.data.user.country || "",
-            useForOrders: response.data.user.useForOrders || false
+            firstname: user.firstname || "",
+            lastname: user.lastname || "",
+            email: user.email || "",
+            phoneNumber: user.phoneNumber || "",
+            street: user.street || "",
+            city: user.city || "",
+            state: user.state || "",
+            zipcode: user.zipcode || "",
+            country: user.country || "",
           });
+          setUseForOrders(user.useForOrders || false);
         }
       } catch (error) {
         console.error(error);
@@ -81,7 +84,8 @@ const Profile = () => {
     } catch (error) {
       console.error(error);
       toast.error(
-        error.response?.data?.message || "An error occurred while updating your profile."
+        error.response?.data?.message ||
+          "An error occurred while updating your profile."
       );
     }
   };
@@ -95,7 +99,7 @@ const Profile = () => {
           value={formData.firstname}
           onChange={onChangeHandler}
           type="text"
-          placeholder="Name"
+          placeholder="First Name"
           required
           className="border p-2 w-full"
         />
@@ -104,7 +108,7 @@ const Profile = () => {
           value={formData.lastname}
           onChange={onChangeHandler}
           type="text"
-          placeholder="Name"
+          placeholder="Last Name"
           required
           className="border p-2 w-full"
         />

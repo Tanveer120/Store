@@ -1,3 +1,4 @@
+// backend/controllers/userController.js
 import userModel from "../models/userModel.js";
 import validator from "validator";
 import bcrypt from "bcrypt";
@@ -12,18 +13,21 @@ const createToken = (id) => {
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
-
     const user = await userModel.findOne({ email });
-
     if (!user) {
       return res.json({
         success: false,
         message: "User not found",
       });
     }
-
+    // Check if the user is banned
+    if (user.isBanned) {
+      return res.json({
+        success: false,
+        message: "Your account is banned. Reason: "+ `${user.banReason}`,
+      });
+    }
     const isMatch = await bcrypt.compare(password, user.password);
-
     if (isMatch) {
       const token = createToken(user._id);
       res.json({
@@ -96,7 +100,6 @@ const registerUser = async (req, res) => {
     });
 
     const user = await newUser.save();
-
     const token = createToken(user._id);
 
     res.json({
@@ -118,7 +121,6 @@ const verifyPhoneNumber = async (req, res) => {
   try {
     const { phoneNumber, otp } = req.body;
     const isVerified = await verifyOtp(phoneNumber, otp);
-
     if (isVerified) {
       await userModel.updateOne({ phoneNumber }, { isPhoneVerified: true });
       return res.json({
@@ -144,7 +146,6 @@ const verifyPhoneNumber = async (req, res) => {
 const initiateRegistration = async (req, res) => {
   try {
     const { name, email, password, phoneNumber } = req.body;
-
     // Check if user already exists
     const exists = await userModel.findOne({ email });
     if (exists) {
@@ -153,7 +154,6 @@ const initiateRegistration = async (req, res) => {
         message: "User already exists",
       });
     }
-
     // Validate email format and strong password
     if (!validator.isEmail(email)) {
       return res.json({
@@ -161,14 +161,12 @@ const initiateRegistration = async (req, res) => {
         message: "Invalid Email",
       });
     }
-
     if (password.length < 8) {
       return res.json({
         success: false,
         message: "Password should be strong",
       });
     }
-
     // Send OTP to phone number
     const otpSent = await sendOtp(phoneNumber);
     if (!otpSent) {
@@ -177,7 +175,6 @@ const initiateRegistration = async (req, res) => {
         message: "Failed to send OTP",
       });
     }
-
     res.json({
       success: true,
       message: "OTP sent to phone number. Please verify to complete registration.",
@@ -196,7 +193,6 @@ const completeRegistration = async (req, res) => {
   try {
     const { name, email, password, phoneNumber, otp } = req.body;
     console.log(name, email, password, phoneNumber, otp);
-
     // Verify OTP
     const isVerified = await verifyOtp(phoneNumber, otp);
     if (!isVerified) {
@@ -205,11 +201,9 @@ const completeRegistration = async (req, res) => {
         message: "Invalid OTP",
       });
     }
-
     // Hash password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
-
     // Save user to database
     const newUser = new userModel({
       name,
@@ -218,11 +212,8 @@ const completeRegistration = async (req, res) => {
       phoneNumber,
       isPhoneVerified: true,
     });
-
     const user = await newUser.save();
-
     const token = createToken(user._id);
-
     res.json({
       success: true,
       message: "User registered successfully",
@@ -274,7 +265,6 @@ const updateUserProfile = async (req, res) => {
         message: "User not found",
       });
     }
-
     // Update only provided fields (update useForOrders correctly)
     user.firstname = req.body.firstname || user.firstname;
     user.lastname = req.body.lastname || user.lastname;
@@ -287,7 +277,6 @@ const updateUserProfile = async (req, res) => {
     user.country = req.body.country || user.country;
     // Use nullish coalescing to allow false values
     user.useForOrders = req.body.useForOrders ?? user.useForOrders;
-
     const updatedUser = await user.save();
     res.json({
       success: true,
