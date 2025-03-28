@@ -10,10 +10,10 @@ const cartItemSchema = new mongoose.Schema({
 const userSchema = new mongoose.Schema(
   {
     firstname: { type: String, required: true },
-    lastname: { type: String, required: true },
+    lastname: { type: String },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    phoneNumber: { type: String, required: true, unique: true },
+    phoneNumber: { type: String, required: true },
     street: { type: String },
     city: { type: String },
     state: { type: String },

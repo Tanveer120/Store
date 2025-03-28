@@ -7,7 +7,7 @@ import { ShopContext } from "../context/ShopContext";
 const Login = () => {
   const [currentState, setCurrentState] = useState(localStorage.getItem('registrationState') || "Login");
   const { token, setToken, navigate, backendUrl } = useContext(ShopContext);
-  const [name, setName] = useState(localStorage.getItem('name') || '');
+  const [firstname, setName] = useState(localStorage.getItem('firstname') || '');
   const [email, setEmail] = useState(localStorage.getItem('email') || '');
   const [password, setPassword] = useState(localStorage.getItem('password') || '');
   const [phoneNumber, setPhoneNumber] = useState(localStorage.getItem('phoneNumber') || '');
@@ -23,7 +23,7 @@ const Login = () => {
           toast.success(response.data.message);
           setCurrentState("Verify OTP");
           localStorage.setItem('registrationState', "Verify OTP");
-          localStorage.setItem('name', name);
+          localStorage.setItem('firstname', firstname);
           localStorage.setItem('email', email);
           localStorage.setItem('password', password);
           localStorage.setItem('phoneNumber', phoneNumber);
@@ -37,7 +37,7 @@ const Login = () => {
           localStorage.setItem("token", response.data.token);
           toast.success(response.data.message);
           localStorage.removeItem('registrationState');
-          localStorage.removeItem('name');
+          localStorage.removeItem('firstname');
           localStorage.removeItem('email');
           localStorage.removeItem('password');
           localStorage.removeItem('phoneNumber');
@@ -102,10 +102,10 @@ const Login = () => {
             <>
               <input
                 onChange={(e) => setName(e.target.value)}
-                value={name}
+                value={firstname}
                 type="text"
                 className="w-full px-3 py-2 border border-gray-800"
-                placeholder="Name"
+                placeholder="First Name"
                 required
               />
               <input
