@@ -14,6 +14,7 @@ import Footer from './components/Footer'
 import SearchBar from './components/SearchBar'
 import Profile from './pages/Profile'
 import ChatPage from './pages/ChatPage'
+import OrderSuccess from './pages/OrderSuccess'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -36,6 +37,7 @@ const App = () => {
         <Route path='/orders' element={<Orders />}></Route>
         <Route path='/profile' element={<Profile />}></Route>
         <Route path='/chat' element={<ChatPage />}></Route>
+        <Route path='/order-success' element={<OrderSuccess />}></Route>
       </Routes>
       <Footer/>
     </div>

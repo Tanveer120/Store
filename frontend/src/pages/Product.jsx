@@ -1,6 +1,6 @@
 // src/pages/Product.jsx
 import React, { useContext, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { ShopContext } from "../context/ShopContext";
 import { assets } from "../assets/frontend_assets/assets";
@@ -14,16 +14,13 @@ const Product = () => {
   const [productData, setProductData] = useState(null);
   const [image, setImage] = useState("");
   const [size, setSize] = useState("");
-
-  // States for reviews
   const [reviewComment, setReviewComment] = useState("");
   const [reviewRating, setReviewRating] = useState(0);
   const [reviews, setReviews] = useState([]);
   const [averageRating, setAverageRating] = useState(0);
-
-  // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
   const reviewsPerPage = 5;
+  const navigate = useNavigate();
 
   const fetchProductData = () => {
     const found = products.find((item) => item._id === productId);
@@ -35,7 +32,6 @@ const Product = () => {
     }
   };
 
-  // Fetch existing reviews
   const fetchReviews = async () => {
     try {
       const response = await axios.get(`${backendUrl}/api/review/${productId}`);
@@ -64,9 +60,34 @@ const Product = () => {
     }
   }, [reviews]);
 
+  // Standard add to cart handler
+  const handleAddToCart = () => {
+    if (!size) {
+      toast.error("Please select a size");
+      return;
+    }
+    addToCart(productData._id, size);
+  };
+
+  // Handler for Buy Now button that navigates directly to checkout with only this product
+  const handleBuyNow = () => {
+    if (!size) {
+      toast.error("Please select a size");
+      return;
+    }
+    const selectedItem = {
+      _id: `${productData._id}-${size}`,
+      product: productData,
+      size,
+      quantity: 1,
+    };
+    navigate("/place-order", { state: { selectedItems: [selectedItem] } });
+  };
+
+  // Review submission function
   const submitReview = async () => {
     if (reviewRating === 0 || reviewComment.trim() === "") {
-      alert("Please provide both a rating and a comment");
+      toast.error("Please provide both a rating and a comment");
       return;
     }
     try {
@@ -76,30 +97,25 @@ const Product = () => {
           product: productId,
           rating: reviewRating,
           comment: reviewComment,
+          userId: localStorage.getItem("userId"),
         },
         { headers: { token } }
       );
-
-      if (response.status === 201 || response.status === 200) {
-        if (response.data.status === 400) {
-          toast.warning(response.data.message);
-        } else {
-          toast.success("Review submitted successfully");
-        }
-        setReviewComment("");
-        setReviewRating(0);
-        fetchReviews();
-      } else if (response.status === 400) {
+      if (response.data.status === 400) {
         toast.warning(response.data.message);
       } else {
-        alert("Error submitting");
+        toast.success("Review submitted successfully");
       }
+      setReviewComment("");
+      setReviewRating(0);
+      fetchReviews();
     } catch (error) {
       console.error("Error submitting review:", error);
+      toast.error("Error submitting review");
     }
   };
 
-  // Pagination logic
+  // Pagination logic for reviews
   const indexOfLastReview = currentPage * reviewsPerPage;
   const indexOfFirstReview = indexOfLastReview - reviewsPerPage;
   const currentReviews = reviews.slice(indexOfFirstReview, indexOfLastReview);
@@ -143,8 +159,7 @@ const Product = () => {
             <p className="pl-2">{averageRating.toFixed(1)} ({reviews.length}) </p>
           </div>
           <p className="mt-5 text-3xl font-medium">
-            {currency}
-            {productData.price}
+            {currency}{productData.price}
           </p>
           <p className="mt-5 text-gray-500 md:w-4/5">{productData.description}</p>
           <div className="flex flex-col gap-4 my-8">
@@ -161,15 +176,20 @@ const Product = () => {
               ))}
             </div>
           </div>
-          <button 
-            onClick={() => {
-              console.log("Adding to cart:", productData._id, "Size:", size);
-              addToCart(productData._id, size);
-            }} 
-            className="bg-black text-white px-8 py-3 text-sm active:bg-gray-700"
-          >
-            ADD TO CART
-          </button>
+          <div className="flex gap-4">
+            <button 
+              onClick={handleAddToCart} 
+              className="bg-black text-white px-8 py-3 text-sm active:bg-gray-700"
+            >
+              ADD TO CART
+            </button>
+            <button 
+              onClick={handleBuyNow} 
+              className="bg-orange-500 text-white px-8 py-3 text-sm active:bg-orange-600"
+            >
+              BUY NOW
+            </button>
+          </div>
           
           <hr className="mt-8 sm:w-4/5" />
           <div className="text-sm text-gray-500 mt-5 flex flex-col gap-1">
@@ -180,13 +200,11 @@ const Product = () => {
         </div>
       </div>
 
-      {/* Description and review section */}
+      {/* Description and Review Section */}
       <div className="mt-20">
         <div className="flex">
           <b className="border px-5 py-3 text-sm">Description</b>
-          <p className="border px-5 py-3 text-sm">
-            Reviews ({reviews.length})
-          </p>
+          <p className="border px-5 py-3 text-sm">Reviews ({reviews.length})</p>
         </div>
         <div className="flex flex-col gap-4 border px-6 py-6 text-sm text-gray-500">
           <p>{productData.description}</p>
@@ -241,9 +259,7 @@ const Product = () => {
                 <span className="ml-2">{rev.rating} / 5</span>
               </div>
               <p className="text-md">Comment: {rev.comment}</p>
-              <p className="text-xs text-gray-400">
-                {new Date(rev.createdAt).toLocaleDateString()}
-              </p>
+              <p className="text-xs text-gray-400">{new Date(rev.createdAt).toLocaleDateString()}</p>
             </div>
           ))
         ) : (
@@ -255,11 +271,7 @@ const Product = () => {
             <button 
               onClick={handlePrevPage} 
               disabled={currentPage === 1}
-              className={`px-4 py-2 border rounded ${
-                currentPage === 1
-                  ? "text-gray-400 cursor-not-allowed"
-                  : "hover:bg-gray-200"
-              }`}
+              className={`px-4 py-2 border rounded ${currentPage === 1 ? 'text-gray-400 cursor-not-allowed' : 'hover:bg-gray-200'}`}
             >
               Previous
             </button>
@@ -269,11 +281,7 @@ const Product = () => {
             <button 
               onClick={handleNextPage} 
               disabled={currentPage === totalPages}
-              className={`px-4 py-2 border rounded ${
-                currentPage === totalPages
-                  ? "text-gray-400 cursor-not-allowed"
-                  : "hover:bg-gray-200"
-              }`}
+              className={`px-4 py-2 border rounded ${currentPage === totalPages ? 'text-gray-400 cursor-not-allowed' : 'hover:bg-gray-200'}`}
             >
               Next
             </button>
@@ -281,14 +289,9 @@ const Product = () => {
         )}
       </div>
 
-      <RelatedProducts
-        category={productData.category}
-        subCategory={productData.subCategory}
-      />
+      <RelatedProducts category={productData.category} subCategory={productData.subCategory} />
     </div>
-  ) : (
-    <div className="opacity-0"></div>
-  );
+  ) : <div className="opacity-0"></div>;
 };
 
 export default Product;
