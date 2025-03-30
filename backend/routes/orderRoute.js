@@ -1,5 +1,5 @@
 import express from 'express';
-import { placeOrder, placeOrderStripe, allOrders, userOrders, updateStatus, verifyStripeSession } from '../controllers/orderController.js';
+import { placeOrder, placeOrderStripe, allOrders, userOrders, updateStatus, verifyStripeSession, addCustomOrder } from '../controllers/orderController.js';
 import adminAuth from '../middleware/adminAuth.js';
 import authUser from '../middleware/auth.js';
 
@@ -16,5 +16,7 @@ orderRouter.get('/verify', verifyStripeSession);
 
 //User feature
 orderRouter.post('/userorders', authUser, userOrders);
+
+orderRouter.post('/custom-order', authUser, addCustomOrder);
 
 export default orderRouter;

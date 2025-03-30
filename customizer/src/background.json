@@ -1,0 +1,37 @@
+{
+    "background": [
+        {
+            
+            
+            "image":"https://images.pexels.com/photos/255379/pexels-photo-255379.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+            
+            "url":"https://images.pexels.com/photos/255379/pexels-photo-255379.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+            "type": "image",
+            "color": ""
+        },
+        {
+            "name": "pexels-asad-photo-maldives",
+            "id": "pexels-asad-photo-maldives",
+            "image": "./background/thumbnail/pexels-asad-photo-maldives.jpeg",
+            "url": "./background/600/pexels-photo-457882-2-2.jpeg",
+            "type": "image",
+            "color": ""
+        },
+        {
+            "name": "pexels-marc-mueller",
+            "id": "pexels-marc-mueller",
+            "image": "./background/thumbnail/pexels-marc-mueller.jpg",
+            "url": "./background/600/pexels-marc-mueller-380768.jpg",
+            "type": "image",
+            "color": ""
+        },
+        {
+            "name": "pexels-shonejai",
+            "id": "pexels-shonejai",
+            "image": "./background/thumbnail/pexels-shonejai.jpg",
+            "url": "./background/600/pexels-shonejai.jpg",
+            "type": "image",
+            "color": ""
+        }
+    ]
+}

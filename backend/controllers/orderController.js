@@ -3,7 +3,10 @@ import orderModel from "../models/orderModel.js";
 import userModel from "../models/userModel.js";
 import nodemailer from "nodemailer";
 import Stripe from "stripe";
-import Razorpay from "razorpay";
+import { v2 as cloudinary } from 'cloudinary';
+import connectCloudinary from '../config/cloudinary.js';
+import customOrderModel from '../models/customOrderModel.js';
+// import Razorpay from "razorpay";
 
 // Initialize Stripe and Razorpay using environment variables
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
@@ -242,4 +245,63 @@ const updateStatus = async (req, res) => {
   }
 };
 
-export { placeOrder, placeOrderStripe, allOrders, userOrders, updateStatus, verifyStripeSession };
+const addCustomOrder = async (req, res) => {
+  try {
+    const {
+      userId,
+      tshirtColor,
+      model,
+      decal, // Expected to include position, rotation, scale, textColor, textContent, textPosition (if any)
+      price,
+      address,
+      status,
+      paymentMethod,
+      payment
+    } = req.body;
+    
+    // If a decal image file is provided, upload it to Cloudinary.
+    let imageUrl = decal.imageUrl || "";
+    if (req.files && req.files.decalImage && req.files.decalImage[0]) {
+      await connectCloudinary();
+      const result = await cloudinary.uploader.upload(req.files.decalImage[0].path, {
+        resource_type: "image"
+      });
+      imageUrl = result.secure_url;
+    }
+
+    // Create the order document data.
+    const orderData = {
+      userId,
+      tshirtColor,
+      model, // { id, name, url }
+      decal: {
+        ...decal,
+        imageUrl, // update with the Cloudinary URL if uploaded
+        // Ensure text fields are captured even if not provided.
+        textContent: decal.textContent || "",
+        // Default textPosition to decal.position if not provided.
+        textPosition: decal.textPosition || { 
+          x: decal.position.x, 
+          y: decal.position.y, 
+          z: decal.position.z 
+        }
+      },
+      price: Number(price),
+      address,
+      status,
+      paymentMethod,
+      payment,
+      date: Date.now()
+    };
+
+    const customOrder = new customOrderModel(orderData);
+    await customOrder.save();
+
+    res.json({ success: true, message: "Order placed successfully" });
+  } catch (error) {
+    console.error(error);
+    res.json({ success: false, message: error.message });
+  }
+};
+
+export { placeOrder, placeOrderStripe, allOrders, userOrders, updateStatus, verifyStripeSession, addCustomOrder };

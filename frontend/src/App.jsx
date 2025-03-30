@@ -15,8 +15,10 @@ import SearchBar from './components/SearchBar'
 import Profile from './pages/Profile'
 import ChatPage from './pages/ChatPage'
 import OrderSuccess from './pages/OrderSuccess'
+import Customizer from './pages/Customizer'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import PlaceCustomOrder from './pages/PlaceCustomOrder'
 
 const App = () => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL
@@ -38,6 +40,8 @@ const App = () => {
         <Route path='/profile' element={<Profile />}></Route>
         <Route path='/chat' element={<ChatPage />}></Route>
         <Route path='/order-success' element={<OrderSuccess />}></Route>
+        <Route path='/customize' element={<Customizer />}></Route>
+        <Route path='/custom-order' element={<PlaceCustomOrder />}></Route>
       </Routes>
       <Footer/>
     </div>
