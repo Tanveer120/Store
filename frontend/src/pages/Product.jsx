@@ -32,19 +32,21 @@ const Product = () => {
     }
   };
 
-  const fetchReviews = async () => {
-    try {
-      const response = await axios.get(`${backendUrl}/api/review/${productId}`);
-      const reviewsArray = Array.isArray(response.data)
-        ? response.data
-        : response.data.reviews || [];
-      setReviews(reviewsArray);
-      setCurrentPage(1);
-    } catch (error) {
-      console.error("Error fetching reviews:", error);
-      setReviews([]);
-    }
-  };
+  // src/pages/Product.jsx
+const fetchReviews = async () => {
+  try {
+    const response = await axios.get(`${backendUrl}/api/review/${productId}`);
+    const reviewsArray = Array.isArray(response.data)
+      ? response.data
+      : response.data.reviews || [];
+    setReviews(reviewsArray);
+    setCurrentPage(1);
+  } catch (error) {
+    console.error("Error fetching reviews:", error);
+    setReviews([]);
+  }
+};
+
 
   useEffect(() => {
     fetchProductData();

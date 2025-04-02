@@ -145,7 +145,8 @@ const verifyPhoneNumber = async (req, res) => {
 // Route for initiating registration
 const initiateRegistration = async (req, res) => {
   try {
-    const { name, email, password, phoneNumber } = req.body;
+    let { firstname, email, password, phoneNumber } = req.body;
+    // phoneNumber = `+91${phoneNumber}`;
     // Check if user already exists
     const exists = await userModel.findOne({ email });
     if (exists) {
@@ -191,8 +192,9 @@ const initiateRegistration = async (req, res) => {
 // Route for verifying OTP and completing registration
 const completeRegistration = async (req, res) => {
   try {
-    const { name, email, password, phoneNumber, otp } = req.body;
-    console.log(name, email, password, phoneNumber, otp);
+    let { firstname, email, password, phoneNumber, otp } = req.body;
+    // console.log(name, email, password, phoneNumber, otp);
+    // phoneNumber = `+91${phoneNumber}`;
     // Verify OTP
     const isVerified = await verifyOtp(phoneNumber, otp);
     if (!isVerified) {
@@ -206,7 +208,7 @@ const completeRegistration = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, salt);
     // Save user to database
     const newUser = new userModel({
-      name,
+      firstname,
       email,
       password: hashedPassword,
       phoneNumber,

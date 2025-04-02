@@ -27,6 +27,16 @@ const Sidebar = () => {
                   <p className='hidden md:block'>Orders</p>
               </NavLink>
 
+              <NavLink className='flex items-center gap-3 border border-gray-300 border-r-0 px-3 py-2 rounded-l' to={'/custom-orders'}>
+                  <img className='w-5 h-5' src={assets.box} />
+                  <p className='hidden md:block'>Custom Orders</p>
+              </NavLink>
+
+              <NavLink className='flex items-center gap-3 border border-gray-300 border-r-0 px-3 py-2 rounded-l' to={'/review'}>
+                  <img className='w-5 h-5' src={assets.box} />
+                  <p className='hidden md:block'>Review</p>
+              </NavLink>
+
               <NavLink className='flex items-center gap-3 border border-gray-300 border-r-0 px-3 py-2 rounded-l' to={'/chatUser'}>
                   <img className='w-5 h-5' src={assets.user_icon} />
                   <p className='hidden md:block'>Chat</p>

@@ -15,7 +15,8 @@ import SearchBar from './components/SearchBar'
 import Profile from './pages/Profile'
 import ChatPage from './pages/ChatPage'
 import OrderSuccess from './pages/OrderSuccess'
-import Customizer from './pages/Customizer'
+// import Customizer from './pages/Customizer'
+import CustomOrders from './pages/CustomOrders'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import PlaceCustomOrder from './pages/PlaceCustomOrder'
@@ -37,10 +38,11 @@ const App = () => {
         <Route path='/login' element={<Login />}></Route>
         <Route path='/place-order' element={<PlaceOrder />}></Route>
         <Route path='/orders' element={<Orders />}></Route>
+        <Route path='/custom-orders/list' element={<CustomOrders />}></Route>
         <Route path='/profile' element={<Profile />}></Route>
         <Route path='/chat' element={<ChatPage />}></Route>
         <Route path='/order-success' element={<OrderSuccess />}></Route>
-        <Route path='/customize' element={<Customizer />}></Route>
+        {/* <Route path='/customize' element={<Customizer />}></Route> */}
         <Route path='/custom-order' element={<PlaceCustomOrder />}></Route>
       </Routes>
       <Footer/>

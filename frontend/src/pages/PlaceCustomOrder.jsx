@@ -102,7 +102,7 @@ const PlaceCustomOrder = () => {
         toast.success("Custom order placed successfully!");
         // Clear the cookie after successful order
         document.cookie = "customOrder=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-        navigate("/orders");
+        navigate("/custom-orders/list");
       } else {
         toast.error(response.data.message);
       }
@@ -150,7 +150,7 @@ const PlaceCustomOrder = () => {
         <div className="mt-12">
           <Title text1="PAYMENT " text2="METHOD" />
           <div className="flex gap-3 flex-col lg:flex-row">
-            {["stripe", "cod"].map((payMethod) => (
+            {["cod"].map((payMethod) => (
               <div
                 key={payMethod}
                 onClick={() => setMethod(payMethod)}

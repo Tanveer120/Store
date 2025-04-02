@@ -24,6 +24,10 @@ const reviewSchema = new mongoose.Schema(
       trim: true,
       required: [true, "Please add a review comment"],
     },
+    approved: {
+      type: Boolean,
+      default: false,  // New reviews are not approved by default
+    },
   },
   { timestamps: true }
 );

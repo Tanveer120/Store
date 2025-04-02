@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@react-pdf/renderer": "^4.3.0",
     "@react-three/drei": "^10.0.5",
     "@react-three/fiber": "^9.1.0",
     "@tailwindcss/vite": "^4.0.15",

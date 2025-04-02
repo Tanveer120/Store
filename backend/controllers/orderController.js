@@ -304,4 +304,52 @@ const addCustomOrder = async (req, res) => {
   }
 };
 
-export { placeOrder, placeOrderStripe, allOrders, userOrders, updateStatus, verifyStripeSession, addCustomOrder };
+// Fetch all custom orders for the Admin panel
+const allCustomOrders = async (req, res) => {
+  try {
+    const orders = await customOrderModel.find({});
+    res.json({ success: true, orders });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
+};
+
+// Fetch custom orders for a specific user
+const userCustomOrders = async (req, res) => {
+  try {
+    const { userId } = req.body;
+    const orders = await customOrderModel.find({ userId });
+    res.json({
+      success: true,
+      message: "Custom order data fetched successfully",
+      orders,
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// Update custom order status (Admin functionality)
+const updateCustomOrderStatus = async (req, res) => {
+  try {
+    const { orderId, status } = req.body;
+    await customOrderModel.findByIdAndUpdate(orderId, { status });
+    res.json({
+      success: true,
+      message: "Custom order status updated successfully",
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+export { placeOrder, placeOrderStripe, allOrders, userOrders, updateStatus, verifyStripeSession, addCustomOrder, allCustomOrders, userCustomOrders, updateCustomOrderStatus };

@@ -1,14 +1,26 @@
 // routes/reviewRoute.js
 import express from 'express';
-import { createReview, getReviewsByProduct } from '../controllers/reviewController.js';
+import {
+  createReview,
+  getReviewsByProduct,
+  getPendingReviews,
+  approveReview,
+  rejectReview,
+} from '../controllers/reviewController.js';
 import authUser from '../middleware/auth.js';
+import adminAuth from '../middleware/adminAuth.js';  // You would create a middleware to check if the user is admin
 
 const reviewRouter = express.Router();
 
-// Route to create a review (protected)
+// Public route to get approved reviews for a product
+reviewRouter.get('/:productId', getReviewsByProduct);
+
+// Protected route for creating a review
 reviewRouter.post('/', authUser, createReview);
 
-// Route to get reviews for a product
-reviewRouter.get('/:productId', getReviewsByProduct);
+// Admin-only routes for moderating reviews
+reviewRouter.get('/admin/pending', adminAuth, getPendingReviews);
+reviewRouter.patch('/admin/:reviewId/approve', adminAuth, approveReview);
+reviewRouter.delete('/admin/:reviewId/reject', adminAuth, rejectReview);
 
 export default reviewRouter;

@@ -18,7 +18,7 @@ const Login = () => {
 
     try {
       if (currentState === "Sign Up") {
-        const response = await axios.post(backendUrl + "/api/user/register/initiate", { name, email, password, phoneNumber });
+        const response = await axios.post(backendUrl + "/api/user/register/initiate", { firstname, email, password, phoneNumber });
         if (response.data.success) {
           toast.success(response.data.message);
           setCurrentState("Verify OTP");
@@ -31,7 +31,7 @@ const Login = () => {
           toast.error(response.data.message);
         }
       } else if (currentState === "Verify OTP") {
-        const response = await axios.post(backendUrl + "/api/user/register/complete", { name, email, password, phoneNumber, otp });
+        const response = await axios.post(backendUrl + "/api/user/register/complete", { firstname, email, password, phoneNumber, otp });
         if (response.data.success) {
           setToken(response.data.token);
           localStorage.setItem("token", response.data.token);
