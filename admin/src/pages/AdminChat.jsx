@@ -4,7 +4,7 @@ import io from "socket.io-client";
 import axios from "axios";
 import { backendUrl } from "../App";
 
-const SOCKET_SERVER_URL = "http://localhost:4000";
+const SOCKET_SERVER_URL = process.env.VITE_BACKEND_URL;
 
 const AdminChat = () => {
   const [socket, setSocket] = useState(null);

@@ -4,8 +4,8 @@ import io from 'socket.io-client';
 import axios from 'axios';
 import { ShopContext } from '../context/ShopContext';
 
-const backendUrl = 'http://localhost:4000';
-const SOCKET_SERVER_URL = 'http://localhost:4000'; // Adjust if needed
+const backendUrl = process.env.VITE_BACKEND_URL;
+const SOCKET_SERVER_URL = process.env.VITE_BACKEND_URL; // Adjust if needed
 
 const ChatWidget = () => {
   const { token } = useContext(ShopContext);

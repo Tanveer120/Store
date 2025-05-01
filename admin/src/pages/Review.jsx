@@ -9,7 +9,7 @@ const AdminReviews = ({ backendUrl, token }) => {
   const fetchPendingReviews = async () => {
     try {
         // toast.success("Trying");
-      const response = await axios.get('http://localhost:4000/api/review/admin/pending', {
+      const response = await axios.get(backendUrl+'/api/review/admin/pending', {
         headers: { token },
       });
       // console.log(response.data);
@@ -27,7 +27,7 @@ const AdminReviews = ({ backendUrl, token }) => {
 
   const handleApprove = async (reviewId) => {
     try {
-      await axios.patch(`http://localhost:4000/api/review/admin/${reviewId}/approve`, {}, {
+      await axios.patch(backendUrl + `/api/review/admin/${reviewId}/approve`, {}, {
         headers: { token },
       });
       toast.success("Review approved");
@@ -39,7 +39,7 @@ const AdminReviews = ({ backendUrl, token }) => {
 
   const handleReject = async (reviewId) => {
     try {
-      await axios.delete(`http://localhost:4000/api/review/admin/${reviewId}/reject`, {
+      await axios.delete(backendUrl + `/api/review/admin/${reviewId}/reject`, {
         headers: { token },
       });
       toast.success("Review rejected");

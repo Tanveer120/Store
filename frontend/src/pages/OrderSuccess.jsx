@@ -8,6 +8,7 @@ const OrderSuccess = () => {
   const [loading, setLoading] = useState(true);
   const location = useLocation();
   const navigate = useNavigate();
+  const backendUrl = process.env.VITE_BACKEND_URL;
   
   // Extract query parameters
   const queryParams = new URLSearchParams(location.search);
@@ -21,7 +22,7 @@ const OrderSuccess = () => {
     const verifyPayment = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:4000/api/order/verify?session_id=${session_id}&orderId=${orderId}`
+          `${backendUrl}/api/order/verify?session_id=${session_id}&orderId=${orderId}`
         );
         console.log("Verification response:", response.data);
         if (response.data.success) {
